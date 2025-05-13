@@ -1,57 +1,20 @@
-atlas-inia-quilamapu/
+/inia-quilamapu/
+├── package.json
 ├── public/
 │   ├── index.html
-│   ├── favicon.ico
-│   └── images/
-│       ├── logo.png
-│       ├── hero-background.jpg
-│       ├── catalog/
-│       │   ├── item1.jpg
-│       │   ├── item2.jpg
-│       │   ├── item3.jpg
-│       │   └── item4.jpg
-│       └── team/
-│           ├── person1.jpg
-│           ├── person2.jpg
-│           └── person3.jpg
+│   └── assets/
+│       └── images/
+│           └── logo.png
 ├── src/
-│   ├── index.js
 │   ├── App.js
-│   ├── App.css
+│   ├── index.js
 │   ├── components/
-│   │   ├── Header/
-│   │   │   ├── Header.js
-│   │   │   └── Header.css
-│   │   ├── Footer/
-│   │   │   ├── Footer.js
-│   │   │   └── Footer.css
-│   │   ├── Home/
-│   │   │   ├── Home.js
-│   │   │   ├── Hero.js
-│   │   │   ├── About.js
-│   │   │   ├── Features.js
-│   │   │   ├── Team.js
-│   │   │   └── Contact.js
-│   │   └── Catalog/
-│   │       ├── CatalogPage.js
-│   │       ├── CatalogItem.js
-│   │       └── CatalogDetail.js
-│   ├── pages/
-│   │   ├── HomePage.js
-│   │   ├── CatalogPage.js
-│   │   ├── DetailPage.js
-│   │   ├── Page1.js
-│   │   ├── Page2.js
-│   │   ├── Page3.js
-│   │   └── Page4.js
+│   │   ├── Layout.js       # Contiene Header y Footer
+│   │   ├── HomePage.js     # Página de inicio
+│   │   ├── AtlasPage.js    # Página del Atlas
+│   │   └── ContactPage.js  # Página de contacto
 │   ├── utils/
-│   │   ├── api.js
-│   │   └── helpers.js
-│   ├── context/
-│   │   └── CatalogContext.js
-│   └── data/
-│       ├── catalogData.js
-│       └── teamData.js
-├── package.json
-├── package-lock.json
+│   │   └── constants.js    # Datos y constantes del sitio
+│   └── styles/
+│       └── global.css      # Estilos globales
 └── README.md
