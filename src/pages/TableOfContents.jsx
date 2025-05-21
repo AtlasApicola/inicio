@@ -1,12 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import atlasData from '../data/atlasData';
-import DynamicIcon from '../components/DynamicIcon';
-import abeja from '../components/images/Abeja.png'; // Importamos la imagen de la abeja
+import abeja from '../components/images/Abeja.png'; // Asegúrate de que la ruta sea correcta
 
-const TableOfContents = ({ onChangePage }) => {
-  const pageData = atlasData[0]; // Obtenemos los datos de la página de índice
+const TableOfContentsPage = ({ onChangePage }) => {
   const [loaded, setLoaded] = useState(false);
   const [hoveredItem, setHoveredItem] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Detectar si es dispositivo móvil
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    // Comprobar al cargar y cuando cambia el tamaño de la ventana
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+    };
+  }, []);
   
   // Simular carga de la página
   useEffect(() => {
@@ -15,7 +28,7 @@ const TableOfContents = ({ onChangePage }) => {
     }, 300);
   }, []);
   
-  // Secciones de contenido
+  // Secciones de contenido (sin cambios)
   const sections = [
     {
       id: 1,
@@ -83,30 +96,45 @@ const TableOfContents = ({ onChangePage }) => {
     }
   ];
 
-  // Determinar si una sección debe estar en la primera o segunda columna
-  const isFirstColumn = (index) => index < 5;
-
   return (
-    <div className="w-full pb-20 overflow-y-auto"> {/* Añadido overflow-y-auto para scroll */}
-      <div className={`w-full flex transition-opacity duration-1000 ${loaded ? 'opacity-100' : 'opacity-0'}`}>
-        {/* Barra lateral verde */}
-        <div className={`hidden md:flex w-28 bg-lime-500 flex-col items-center justify-center transform transition-transform duration-700 ${loaded ? 'translate-x-0' : '-translate-x-full'}`} style={{height: '600px', position: 'sticky', top: '64px'}}>
-          <div className="h-full flex items-center justify-center">
-            <div className={`text-2xl font-black text-white tracking-tighter -rotate-90 transform whitespace-nowrap transition-transform duration-1000 ${loaded ? 'opacity-100' : 'opacity-0 -translate-y-10'}`}>
-              Tabla de Contenidos
-            </div>
+    <div className="w-full h-full flex flex-col md:flex-row overflow-hidden">
+      {/* BARRA LATERAL VERDE - CORREGIDA PARA OCUPAR TODA LA ALTURA */}
+      <div 
+        className={`hidden md:block w-12 lg:w-16 bg-lime-500 transition-transform duration-700 ${loaded ? 'translate-x-0' : '-translate-x-full'}`}
+        style={{
+          height: '100vh',
+          position: 'sticky',
+          top: 0
+        }}
+      >
+        <div className="h-full flex items-center justify-center">
+          <div className={`text-base lg:text-lg font-black text-black tracking-tighter -rotate-90 transform whitespace-nowrap transition-transform duration-1000 ${loaded ? 'opacity-100' : 'opacity-0 -translate-y-10'}`}>
+            Tabla de Contenidos
           </div>
         </div>
-        
-        {/* Contenido principal */}
-        <div className="w-full bg-white p-4 overflow-y-auto"> {/* Añadido overflow-y-auto para scroll */}
-          <div className="max-w-5xl mx-auto">
+      </div>
+      
+      {/* Contenido principal */}
+      <div className="w-full bg-white p-3 overflow-y-auto">
+        <div className={`transition-opacity duration-1000 ${loaded ? 'opacity-100' : 'opacity-0'}`}>
+          <div className="max-w-7xl mx-auto">
             
-            {/* Filas de índice */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-x-14 md:gap-y-6 relative">
+            {/* Imagen de abeja para móviles (más pequeña) */}
+            <div className="md:hidden w-full flex justify-center mb-4">
+              <div className={`w-28 h-28 transition-all duration-1500 ${loaded ? 'opacity-80 scale-100' : 'opacity-0 scale-0'} bee-float-mobile`}>
+                <img 
+                  src={abeja} 
+                  alt="Abeja melífera" 
+                  className="object-contain w-full h-full"
+                />
+              </div>
+            </div>
+            
+            {/* Filas de índice - Más compactas */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-x-8 md:gap-y-3 relative">
               
-              {/* Imagen de abeja en el centro */}
-              <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 pointer-events-none hidden md:block z-10 transition-all duration-1500 ${loaded ? 'opacity-80 scale-100 rotate-0' : 'opacity-0 scale-0 -rotate-180'} bee-float`}>
+              {/* Imagen de abeja en el centro (solo para escritorio) - Más pequeña */}
+              <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 lg:w-48 h-40 lg:h-48 pointer-events-none hidden md:block z-10 transition-all duration-1500 ${loaded ? 'opacity-80 scale-100 rotate-0' : 'opacity-0 scale-0 -rotate-180'} bee-float`}>
                 <img 
                   src={abeja} 
                   alt="Abeja melífera" 
@@ -114,36 +142,53 @@ const TableOfContents = ({ onChangePage }) => {
                 />
               </div>
 
-              <style jsx>{`
+              <style jsx="true">{`
                 @keyframes float {
                   0% { transform: translate(-50%, -50%) translateY(0px) rotate(0deg); }
-                  25% { transform: translate(-50%, -50%) translateY(-15px) rotate(3deg); }
+                  25% { transform: translate(-50%, -50%) translateY(-10px) rotate(2deg); }
                   50% { transform: translate(-50%, -50%) translateY(0px) rotate(0deg); }
-                  75% { transform: translate(-50%, -50%) translateY(15px) rotate(-3deg); }
+                  75% { transform: translate(-50%, -50%) translateY(10px) rotate(-2deg); }
                   100% { transform: translate(-50%, -50%) translateY(0px) rotate(0deg); }
                 }
-                .bee-float {
-                  animation: float 6s ease-in-out infinite;
+                
+                @keyframes floatMobile {
+                  0% { transform: translateY(0px) rotate(0deg); }
+                  25% { transform: translateY(-6px) rotate(2deg); }
+                  50% { transform: translateY(0px) rotate(0deg); }
+                  75% { transform: translateY(6px) rotate(-2deg); }
+                  100% { transform: translateY(0px) rotate(0deg); }
                 }
+                
+                .bee-float {
+                  animation: float 5s ease-in-out infinite;
+                }
+                
+                .bee-float-mobile {
+                  animation: floatMobile 5s ease-in-out infinite;
+                }
+                
                 .slide-in {
                   animation: slideIn 0.5s forwards;
                 }
+                
                 @keyframes slideIn {
                   0% { opacity: 0; transform: translateY(20px); }
                   100% { opacity: 1; transform: translateY(0); }
                 }
+                
                 .list-item-appear {
                   animation: fadeSlideIn 0.4s forwards;
                 }
+                
                 @keyframes fadeSlideIn {
                   0% { opacity: 0; transform: translateX(-10px); }
                   100% { opacity: 1; transform: translateX(0); }
                 }
               `}</style>
               
-              {/* Primer grupo: columna izquierda */}
-              <div className="space-y-6">
-                {sections.filter((_, i) => isFirstColumn(i)).map((section, index) => (
+              {/* Primer grupo: columna izquierda en escritorio, o primera mitad en móvil */}
+              <div className="space-y-3">
+                {sections.slice(0, isMobile ? sections.length : 5).map((section, index) => (
                   <div 
                     key={section.id}
                     className={`flex items-start transition-all duration-500 ${loaded ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-10'}`}
@@ -151,22 +196,22 @@ const TableOfContents = ({ onChangePage }) => {
                     onMouseEnter={() => setHoveredItem(section.id)}
                     onMouseLeave={() => setHoveredItem(null)}
                   >
-                    <div className="mr-2">
+                    <div className="mr-2 flex-shrink-0">
                       <div 
-                        className={`text-5xl font-black transition-all duration-300 ${hoveredItem === section.id ? 'text-lime-600 transform scale-110' : 'text-black'}`}
+                        className={`text-2xl sm:text-3xl lg:text-3xl font-black transition-all duration-300 ${hoveredItem === section.id ? 'text-lime-600 transform scale-110' : 'text-black'}`}
                       >
                         {section.number}
                       </div>
                     </div>
-                    <div className="mt-1">
+                    <div className="mt-1 w-full">
                       <button 
-                        className={`text-sm font-bold mb-1 text-left transition-all duration-300 ${hoveredItem === section.id ? 'text-lime-600 transform translate-x-1' : 'hover:text-lime-600'}`}
-                        onClick={() => onChangePage(section.id)}
+                        className={`text-xs sm:text-sm font-bold mb-0.5 text-left transition-all duration-300 ${hoveredItem === section.id ? 'text-lime-600 transform translate-x-1' : 'hover:text-lime-600'}`}
+                        onClick={() => onChangePage && onChangePage(section.id)}
                       >
                         {section.title}
                       </button>
                       <ul 
-                        className={`list-disc pl-4 space-y-0.5 text-xs text-gray-700 transition-all duration-500 ${loaded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}
+                        className={`list-disc pl-4 space-y-0 text-2xs text-gray-700 transition-all duration-500 ${loaded ? 'max-h-24 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}
                         style={{ transitionDelay: `${index * 150 + 200}ms` }}
                       >
                         {section.items.map((item, idx) => (
@@ -183,13 +228,13 @@ const TableOfContents = ({ onChangePage }) => {
                       {section.subsections?.map((subsection, subIdx) => (
                         <React.Fragment key={`sub-${subIdx}`}>
                           <p 
-                            className="text-xs font-bold mt-1 list-item-appear"
+                            className="text-2xs font-bold mt-0.5 list-item-appear"
                             style={{ animationDelay: `${index * 150 + 500 + subIdx * 100}ms` }}
                           >
                             {subsection.title}
                           </p>
                           <ul 
-                            className={`list-disc pl-4 space-y-0.5 text-xs text-gray-700 transition-all duration-500 ${loaded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}
+                            className={`list-disc pl-4 space-y-0 text-2xs text-gray-700 transition-all duration-500 ${loaded ? 'max-h-24 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}
                             style={{ transitionDelay: `${index * 150 + 600 + subIdx * 100}ms` }}
                           >
                             {subsection.items.map((item, itemIdx) => (
@@ -209,73 +254,75 @@ const TableOfContents = ({ onChangePage }) => {
                 ))}
               </div>
               
-              {/* Segundo grupo: columna derecha */}
-              <div className="space-y-6 relative pl-28">
-                {sections.filter((_, i) => !isFirstColumn(i)).map((section, index) => (
-                  <div 
-                    key={section.id}
-                    className={`flex items-start transition-all duration-500 ${loaded ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-10'}`}
-                    style={{ transitionDelay: `${(index + 5) * 150}ms` }}
-                    onMouseEnter={() => setHoveredItem(section.id)}
-                    onMouseLeave={() => setHoveredItem(null)}
-                  >
-                    <div className="mr-2">
-                      <div 
-                        className={`text-5xl font-black transition-all duration-300 ${hoveredItem === section.id ? 'text-lime-600 transform scale-110' : 'text-black'}`}
-                      >
-                        {section.number}
+              {/* Segundo grupo: columna derecha en escritorio, oculta en móvil */}
+              {!isMobile && (
+                <div className="space-y-3 relative md:pl-10 lg:pl-12">
+                  {sections.slice(5).map((section, index) => (
+                    <div 
+                      key={section.id}
+                      className={`flex items-start transition-all duration-500 ${loaded ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-10'}`}
+                      style={{ transitionDelay: `${(index + 5) * 150}ms` }}
+                      onMouseEnter={() => setHoveredItem(section.id)}
+                      onMouseLeave={() => setHoveredItem(null)}
+                    >
+                      <div className="mr-2 flex-shrink-0">
+                        <div 
+                          className={`text-2xl sm:text-3xl lg:text-3xl font-black transition-all duration-300 ${hoveredItem === section.id ? 'text-lime-600 transform scale-110' : 'text-black'}`}
+                        >
+                          {section.number}
+                        </div>
+                      </div>
+                      <div className="mt-1 w-full">
+                        <button 
+                          className={`text-xs sm:text-sm font-bold mb-0.5 text-left transition-all duration-300 ${hoveredItem === section.id ? 'text-lime-600 transform translate-x-1' : 'hover:text-lime-600'}`}
+                          onClick={() => onChangePage && onChangePage(section.id)}
+                        >
+                          {section.title}
+                        </button>
+                        <ul 
+                          className={`list-disc pl-4 space-y-0 text-2xs text-gray-700 transition-all duration-500 ${loaded ? 'max-h-24 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}
+                          style={{ transitionDelay: `${(index + 5) * 150 + 200}ms` }}
+                        >
+                          {section.items.map((item, idx) => (
+                            <li 
+                              key={idx}
+                              className="list-item-appear"
+                              style={{ animationDelay: `${(index + 5) * 150 + 300 + idx * 100}ms` }}
+                            >
+                              {item}
+                            </li>
+                          ))}
+                        </ul>
+                        
+                        {section.subsections?.map((subsection, subIdx) => (
+                          <React.Fragment key={`sub-${subIdx}`}>
+                            <p 
+                              className="text-2xs font-bold mt-0.5 list-item-appear"
+                              style={{ animationDelay: `${(index + 5) * 150 + 500 + subIdx * 100}ms` }}
+                            >
+                              {subsection.title}
+                            </p>
+                            <ul 
+                              className={`list-disc pl-4 space-y-0 text-2xs text-gray-700 transition-all duration-500 ${loaded ? 'max-h-24 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}
+                              style={{ transitionDelay: `${(index + 5) * 150 + 600 + subIdx * 100}ms` }}
+                            >
+                              {subsection.items.map((item, itemIdx) => (
+                                <li 
+                                  key={itemIdx}
+                                  className="list-item-appear"
+                                  style={{ animationDelay: `${(index + 5) * 150 + 700 + subIdx * 100 + itemIdx * 50}ms` }}
+                                >
+                                  {item}
+                                </li>
+                              ))}
+                            </ul>
+                          </React.Fragment>
+                        ))}
                       </div>
                     </div>
-                    <div className="mt-1">
-                      <button 
-                        className={`text-sm font-bold mb-1 text-left transition-all duration-300 ${hoveredItem === section.id ? 'text-lime-600 transform translate-x-1' : 'hover:text-lime-600'}`}
-                        onClick={() => onChangePage(section.id)}
-                      >
-                        {section.title}
-                      </button>
-                      <ul 
-                        className={`list-disc pl-4 space-y-0.5 text-xs text-gray-700 transition-all duration-500 ${loaded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}
-                        style={{ transitionDelay: `${(index + 5) * 150 + 200}ms` }}
-                      >
-                        {section.items.map((item, idx) => (
-                          <li 
-                            key={idx}
-                            className="list-item-appear"
-                            style={{ animationDelay: `${(index + 5) * 150 + 300 + idx * 100}ms` }}
-                          >
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                      
-                      {section.subsections?.map((subsection, subIdx) => (
-                        <React.Fragment key={`sub-${subIdx}`}>
-                          <p 
-                            className="text-xs font-bold mt-1 list-item-appear"
-                            style={{ animationDelay: `${(index + 5) * 150 + 500 + subIdx * 100}ms` }}
-                          >
-                            {subsection.title}
-                          </p>
-                          <ul 
-                            className={`list-disc pl-4 space-y-0.5 text-xs text-gray-700 transition-all duration-500 ${loaded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}
-                            style={{ transitionDelay: `${(index + 5) * 150 + 600 + subIdx * 100}ms` }}
-                          >
-                            {subsection.items.map((item, itemIdx) => (
-                              <li 
-                                key={itemIdx}
-                                className="list-item-appear"
-                                style={{ animationDelay: `${(index + 5) * 150 + 700 + subIdx * 100 + itemIdx * 50}ms` }}
-                              >
-                                {item}
-                              </li>
-                            ))}
-                          </ul>
-                        </React.Fragment>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -284,4 +331,4 @@ const TableOfContents = ({ onChangePage }) => {
   );
 };
 
-export default TableOfContents;
+export default TableOfContentsPage;
